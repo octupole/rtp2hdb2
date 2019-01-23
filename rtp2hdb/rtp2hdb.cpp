@@ -79,12 +79,12 @@ int main(int ac, char* av[])
     ss<< ifs.rdbuf();
 
     string sstr=ss.str();
-    vector<string> strs=split(sstr,'\n');
+    vector<string> strs=split(sstr,"\n");
     map<string,vector<string>> residues;
     string name;
 
     for(size_t o{0};o<strs.size();o++){
-    	vector<string> st0=split(strs[o],';');
+    	vector<string> st0=split(strs[o],";");
     	if(st0.size() == 0 ) continue;
     	if(st0[0].find_first_not_of(' ') == std::string::npos) continue;
         std::cmatch m,mb;
@@ -101,28 +101,49 @@ int main(int ac, char* av[])
         	residues[name].push_back(st0[0]);
         }
     }
-    map<string,vector<string>> connect;
+    map<string,vector<vector<string>>> connect;
     for(auto it=residues.begin();it!=residues.end();it++){
     	vector<string> conn=residues[it->first];
+        bool ok_bonds{false};
+        bool ok_other{false};
         for(size_t o{0};o<conn.size();o++){
-            std::cmatch m,mb;
-            bool ok_atoms=std::regex_match(conn[o].c_str(),m,ATOMS);
-            bool ok_bonds=std::regex_match(conn[o].c_str(),mb,BONDS);
-            bool ok_imprs=std::regex_match(conn[o].c_str(),m,IMPR);
-            bool ok_cmaps=std::regex_match(conn[o].c_str(),m,CMAP);
-
-            if(mb.size() == 2){
-            	connect[it->first]=vector<string>();
-            } else {
-
+            std::cmatch m0,m1,m2,mb;
+            if(std::regex_match(conn[o].c_str(),m0,ATOMS) ||
+            		std::regex_match(conn[o].c_str(),m1,IMPR) ||
+					std::regex_match(conn[o].c_str(),m2,CMAP)){
+            	ok_other=true;
+            	ok_bonds=false;
+            }
+            if(std::regex_match(conn[o].c_str(),mb,BONDS)){
+            	ok_bonds=true;
+            }
+            if(ok_bonds){
+            	if(mb.size() == 2){
+            		connect[it->first]=vector<vector<string>>();
+            	} else{
+            		vector<string> st0=split(conn[o]," ");
+            		vector<string> st1;
+            		for(auto o: st0){
+            			if(o.find_first_not_of(' ') == std::string::npos) continue;
+            			st1.push_back(o);
+            		}
+            		connect[it->first].push_back(st1);
+            	}
             }
         }
-
-    	for(size_t o{0};o< it->second.size();o++){
-    		cout << o << " " <<it->second[o]<<endl;
-    	}
     }
-
+//    for(auto it=connect.begin();it!=connect.end();it++){
+//    	cout << it->first <<endl;
+//    	int N{0};
+//    	for(auto o: it->second){
+//    		cout << N << " -> ";
+//    		for(auto p: o){
+//    			cout <<"--"<<  p << " - ";
+//    		}
+//    		cout <<endl;
+//    		N++;
+//    	}
+//    }
 //
 //
 //    cout << "Gromacs hydrogen bond file \"" << fileO << "\" has been created \n";

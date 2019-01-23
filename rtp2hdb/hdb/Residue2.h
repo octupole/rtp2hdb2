@@ -28,7 +28,7 @@ static regex re_squares("\\[ *(\\w*) *\\]");
 static regex re_atoms("\\[ *(atoms) *\\]");
 static regex re_bonds("\\[ *(bonds) *\\]");
 static regex re_impropers("\\[ *(impropers) *\\]");
-
+namespace old{
 class Connected: public vector<string>{
 	void getVector(vector<string> y, string x, char what='A'){
 		vector<string>::iterator itc;
@@ -89,5 +89,5 @@ public:
 		return out;
 	}
 };
-
+}
 #endif /* RESIDUE_H_ */

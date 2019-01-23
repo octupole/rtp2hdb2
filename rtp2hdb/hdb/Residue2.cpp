@@ -5,7 +5,8 @@
  *      Author: marchi
  */
 
-#include "Residue.h"
+#include <Residue2.h>
+namespace old{
 bool Residue::force=false;
 
 void Residue::its_error(char c){
@@ -295,4 +296,4 @@ Residue::Residue(string label0, string sstr): label(label0) {
 Residue::~Residue() {
 	// TODO Auto-generated destructor stub
 }
-
+}
